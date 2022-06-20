@@ -1,0 +1,127 @@
+# 规范文档参考:
+# 中文：https://github.com/Serverless-Devs/Serverless-Devs/blob/master/spec/zh/0.0.2/serverless_package_model/package_model.md#应用模型规范
+# English: https://github.com/Serverless-Devs/Serverless-Devs/blob/master/spec/en/0.0.2/serverless_package_model/package_model.md#Application-model-specification
+# --------------
+# Package 开发发布最佳实践:
+#   - [社区讨论 #62](https://github.com/Serverless-Devs/Serverless-Devs/discussions/62);
+#   - [社区讨论 #407](https://github.com/Serverless-Devs/Serverless-Devs/discussions/407);
+#   - [社区讨论 #439](https://github.com/Serverless-Devs/Serverless-Devs/discussions/439);
+
+Type: Application
+Name: ots-table-backup
+Provider:
+  - 阿里云
+Version: 0.0.1
+Description: 快速部署表格存储备份表项目到函数计算
+HomePage: https://github.com/devsapp/ots-table-backup
+Tags: #标签详情
+  - OTS
+  - TableStore
+  - Java
+  - CustomRuntime
+Category: 其他 # 基础云服务/Web框架/Web应用/人工智能/音视频处理/图文处理/监控告警/大数据/IoT/新手入门/其他
+Service: # 使用的服务
+  函数计算:
+    Authorities:
+      - AliyunFCFullAccess
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - serviceName
+    - functionName
+    - sourceEndpoint
+    - targetEndpoint
+    - sourceTable
+    - targetTable
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-hangzhou
+      description: 创建应用所在的地区
+      enum:
+        - cn-beijing
+        - cn-hangzhou
+        - cn-shanghai
+        - cn-qingdao
+        - cn-zhangjiakou
+        - cn-huhehaote
+        - cn-shenzhen
+        - cn-chengdu
+        - cn-hongkong
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-northeast-1
+        - eu-central-1
+        - eu-west-1
+        - us-west-1
+        - us-east-1
+        - ap-south-1
+    roleArn:
+      title: 服务角色
+      type: string
+      default: ''
+      description: 函数执行时所扮演的角色
+      x-role:
+        type: object
+        name: otsbackuprole
+        pattern: '^acs:ram::[0-9]*:role/.*$'
+        service: fc
+        description: 应用所属的函数计算服务配置的 role, 请提前创建好对应的 role, 授信函数计算服务, 并配置好 AliyunOSSFullAccess 和 AliyunFCDefaultRolePolicy policy。
+        authorities:
+          - AliyunOTSFullAccess
+          - AliyunFCDefaultRolePolicy
+    serviceName:
+      title: 服务名
+      type: string
+      default: ots-table-backup-service
+      description: 应用的服务名称
+    functionName:
+      title: 函数名
+      type: string
+      default: ots-table-backup-function
+      description: 应用的函数名称
+    sourceEndpoint:
+      title: 源表所在实例endpoint
+      type: string
+      description: 指定源表所在实例endpoint
+    targetEndpoint:
+      title: 目标表所在实例endpoint
+      type: string
+      description: 指定目标表所在实例endpoint
+    sourceTable:
+      title: 源表名
+      type: string
+      description: 指定源表名
+    targetTable:
+      title: 目标表名
+      type: string
+      description: 指定目标表名
+    tunnelType:
+      title: 备份通道类型
+      type: string
+      default: 'BaseAndStream'
+      description: 备份通道类型
+      enum:
+        - BaseAndStream
+        - BaseData
+        - Stream
+    backupEndTime:
+      title: 增量备份截止时间
+      type: string
+      default: ''
+      description: 增量备份截止时间
+    dropIfExist:
+      title: 目标表存在时是否先删除表
+      type: boolean
+      default: false
+      description: 目标表存在时是否先删除表
+    cronExpression:
+      title: 定时触发时间，不指定则单次执行
+      type: string
+      default: ''
+      description: 指定定时触发时间
