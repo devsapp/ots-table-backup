@@ -11,7 +11,7 @@ Type: Application
 Name: ots-table-backup
 Provider:
   - 阿里云
-Version: 0.0.2
+Version: 0.0.3
 Description: 快速部署表格存储备份表项目到函数计算
 HomePage: https://github.com/devsapp/ots-table-backup
 Tags: #标签详情
@@ -88,11 +88,11 @@ Parameters:
     sourceEndpoint:
       title: 源表所在实例endpoint
       type: string
-      description: 指定源表所在实例endpoint
+      description: 指定源表所在实例endpoint(https://source-instance.cn-hangzhou.ots.aliyuncs.com)
     targetEndpoint:
       title: 目标表所在实例endpoint
       type: string
-      description: 指定目标表所在实例endpoint
+      description: 指定目标表所在实例endpoint(https://target-instance.cn-beijing.ots.aliyuncs.com)
     sourceTable:
       title: 源表名
       type: string
@@ -104,17 +104,17 @@ Parameters:
     tunnelType:
       title: 备份通道类型
       type: string
-      default: 'BaseAndStream'
+      default: 'BaseData'
       description: 备份通道类型
       enum:
-        - BaseAndStream
         - BaseData
+        - BaseAndStream
         - Stream
     backupEndTime:
       title: 增量备份截止时间
       type: string
       default: ''
-      description: 增量备份截止时间
+      description: 使用增量备份时同步截止时间('2022-07-01 00:00:00', yyyy-MM-dd)
     dropIfExist:
       title: 目标表存在时是否先删除表
       type: boolean
