@@ -10,19 +10,19 @@ vars: # 全局变量
     logConfig: auto
 
 services:
-  framework: # 业务名称/模块名称
+  tableBackup: # 业务名称/模块名称
     component: fc
     actions: # 自定义执行逻辑，关于actions 的使用，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#行为描述
       pre-deploy: # 在deploy之前运行
         - run: mvn package -q -DskipTests # 要执行的系统命令，类似于一种钩子的形式
-          path: ./code # 执行系统命令/钩子的路径
+          path: ./OTSTableBackup # 执行系统命令/钩子的路径
     props: # 组件的属性值
       region: ${vars.region} # 关于变量的使用方法，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#变量赋值
       service: ${vars.service}
       function:
         name: '{{ functionName }}'
         description: 'OTS Table Backup Function'
-        codeUri: ./code/target/OTSTableBackup.jar
+        codeUri: ./OTSTableBackup/target/OTSTableBackup.jar
         runtime: custom
         caPort: 9000
         memorySize: 512
@@ -47,3 +47,30 @@ services:
           DROP_IF_EXIST: '{{ dropIfExist }}'
           TUNNEL_TYPE: '{{ tunnelType }}'
           BACKUP_END_TIME: '{{ backupEndTime }}'
+
+  tableMock: # 业务名称/模块名称
+    component: fc
+    actions: # 自定义执行逻辑，关于actions 的使用，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#行为描述
+      pre-deploy: # 在deploy之前运行
+        - run: mvn package -q -DskipTests # 要执行的系统命令，类似于一种钩子的形式
+          path: ./OTSTableMock # 执行系统命令/钩子的路径
+    props: # 组件的属性值
+      region: ${vars.region} # 关于变量的使用方法，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#变量赋值
+      service: ${vars.service}
+      function:
+        name: 'ots-table-mock'
+        description: 'OTS Table Mock Function'
+        codeUri: ./OTSTableMock/target/OTSTableMock.jar
+        runtime: custom
+        caPort: 9000
+        memorySize: 512
+        timeout: 600
+        customRuntimeConfig:
+          command:
+            - java
+          args:
+            - 'org.springframework.boot.loader.JarLauncher'
+        instanceConcurrency: 1
+        environmentVariables:
+          SOURCE_ENDPOINT: '{{ sourceEndpoint }}'
+          SOURCE_TABLE: '{{ sourceTable }}'

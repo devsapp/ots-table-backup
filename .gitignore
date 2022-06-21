@@ -1,2 +1,12 @@
+### IntelliJ IDEA ###
 .idea
-src/code/target/*
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### Maven ###
+.mvn/
+src/*/target/

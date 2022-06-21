@@ -11,7 +11,7 @@ Type: Application
 Name: ots-table-backup
 Provider:
   - 阿里云
-Version: 0.0.5
+Version: 0.0.6
 Description: 快速部署表格存储备份表项目到函数计算
 HomePage: https://github.com/devsapp/ots-table-backup
 Tags: #标签详情
@@ -78,12 +78,12 @@ Parameters:
     serviceName:
       title: 服务名
       type: string
-      default: ots-table-backup-service
+      default: ots-table-backup
       description: 应用的服务名称
     functionName:
       title: 函数名
       type: string
-      default: ots-table-backup-function
+      default: ots-table-backup
       description: 应用的函数名称
     sourceEndpoint:
       title: 源表所在实例endpoint
