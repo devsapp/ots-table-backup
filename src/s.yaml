@@ -46,8 +46,19 @@ services:
           TARGET_TABLE: '{{ targetTable }}'
           DROP_IF_EXIST: '{{ dropIfExist }}'
           TUNNEL_TYPE: '{{ tunnelType }}'
+          {{if backupEndTime !== ''}}
           BACKUP_END_TIME: '{{ backupEndTime }}'
-
+          {{/if}}
+        {{if cronExpression !== ''}}
+        triggers:
+        - name: cron
+          type: timer
+          qualifier: LATEST
+          config:
+            payload: ''
+            cronExpression: '{{ cronExpression }}'
+        {{/if}}
+        
   tableMock: # 业务名称/模块名称
     component: fc
     actions: # 自定义执行逻辑，关于actions 的使用，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#行为描述
