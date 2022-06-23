@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +62,7 @@ public class OtsTableBackupApplication {
 
     private TunnelClient tunnelClient;
 
-    private void copyFromTable(DescribeTableResponse response) {
+    private void copyFromSourceTable(DescribeTableResponse response) {
         TableMeta sourceMeta = response.getTableMeta();
         response.getTableOptions().setMaxTimeDeviation(Long.MAX_VALUE / 1000000);
 
@@ -72,6 +70,9 @@ public class OtsTableBackupApplication {
         // add primary key column, from the source table
         for (PrimaryKeySchema primaryKeySchema : sourceMeta.getPrimaryKeyList()) {
             tableMeta.addPrimaryKeyColumn(new PrimaryKeySchema(primaryKeySchema.getName(), primaryKeySchema.getType()));
+        }
+        for (DefinedColumnSchema definedColumnSchema : sourceMeta.getDefinedColumnsList()) {
+            tableMeta.addDefinedColumn(new DefinedColumnSchema(definedColumnSchema.getName(), definedColumnSchema.getType()));
         }
 
         CreateTableRequest request = new CreateTableRequest(tableMeta,
@@ -191,12 +192,12 @@ public class OtsTableBackupApplication {
                     targetClient.deleteTable(deleteTableRequest);
 
                     logger.info("Target table {} drop success, try to recreate", target.getTableName());
-                    copyFromTable(sourceResponse);
+                    copyFromSourceTable(sourceResponse);
                 }
             } catch (TableStoreException e) {
                 if (Objects.equals(e.getErrorCode(), "OTSObjectNotExist")) {
                     logger.warn("Target table {} not exist, try to create", target.getTableName());
-                    copyFromTable(sourceResponse);
+                    copyFromSourceTable(sourceResponse);
                 } else {
                     throw e;
                 }
