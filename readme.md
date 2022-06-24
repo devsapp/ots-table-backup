@@ -53,8 +53,9 @@
 
 # 应用详情
 
-通过该项目，可以实现将表格存储的源表定时备份到目标表的功能
+使用表格存储后，比较常见的运维场景是主备表间进行同步。通过该项目，可以利用函数计算完成将表格存储的源表定时备份到目标表的功能，实现按量付费，免去购买及运维服务器的烦恼。
 
+>通过本应用，还可以完整地体验从 SpringBoot 单体应用平滑迁移函数计算的流程
 
 ## 初始化参数
 | 参数名称       | 参数类型 | 是否必填 | 例子                                                      | 参数含义                                                                                               |
@@ -70,6 +71,33 @@
 | backupEndTime  | String   | 选填     | '2022-07-01 00:00:00'                                     | 使用增量备份时，备份的截止时间，yyyy-MM-dd HH:mm:ss                                                    |
 | dropIfExist    | Boolean  | 选填     | False                                                     | 目标表存在时是否先删除目标表，保证目标表和源表的完全一致                                               |
 | cronExpression | String   | 选填     | '@every 60m'                                              | 定时触发时间，参考 [函数计算](https://help.aliyun.com/document_detail/171746.html#section-gbz-k3r-vum) |
+
+## 工作原理
+* 利用表格存储的[通道服务](https://help.aliyun.com/document_detail/102489.html)，将其改造成Serverless形态，完成从源表到目标的复制功能
+* 使用函数计算的 [Custom Runtime](https://help.aliyun.com/document_detail/191342.html) 将单体SpringBoot项目进行函数化，完全贴合传统开发体验，实现零代码改造
+* 使用函数计算的 [生命周期回调](https://help.aliyun.com/document_detail/425056.html)，将表初始化的逻辑封装到 Initializer 中，将通道消费的逻辑封装到 Invoke 中，将连接池释放的逻辑封装到 PreStop 中
+
+![alt](https://img.alicdn.com/imgextra/i4/O1CN01kIubex1l1fdk8ZnIQ_!!6000000004759-2-tps-981-1071.png)
+
+
+部署完成后，会创建两个函数:
+1. ots-table-mock：用于测试，当指定的源表不存在时，会使用mock数据自动构造一张
+2. ots-table-backup：用于表的备份
+
+
+## 执行效果
+1. 执行 ots-table-mock 函数，自动构造一张源表
+   ![alt](https://img.alicdn.com/imgextra/i4/O1CN01FKrVEI1XcrB9TAgO3_!!6000000002945-2-tps-3742-1146.png)
+2. 查看源表已经完成创建
+   ![alt](https://img.alicdn.com/imgextra/i1/O1CN01PIsaEW1Kv5wdCc5eH_!!6000000001225-0-tps-3366-1462.jpg)
+3. 执行 ots-table-backup 函数，进行表备份
+   ![alt](https://img.alicdn.com/imgextra/i1/O1CN017PxSZt1DN1AJ25i0Y_!!6000000000203-2-tps-2514-1436.png)
+   ![alt](https://img.alicdn.com/imgextra/i2/O1CN01AtsRg11Yd92dYAs9C_!!6000000003081-0-tps-2548-1308.jpg)
+   ![alt](https://img.alicdn.com/imgextra/i3/O1CN01HAbyKW1c1MpsQVk2X_!!6000000003540-2-tps-2490-980.png)
+4. 查看备份结果
+   ![alt](https://img.alicdn.com/imgextra/i1/O1CN01gonw031w0iacmHKN6_!!6000000006246-0-tps-3406-1546.jpg)
+5. 开启定时备份
+   ![alt](https://img.alicdn.com/imgextra/i1/O1CN0126uyAJ1x9hyuchxc9_!!6000000006401-0-tps-3794-1000.jpg)
 
 <devgroup>
 
