@@ -10,8 +10,11 @@ import com.alicloud.openservices.tablestore.tunnel.worker.TunnelWorker;
 import com.alicloud.openservices.tablestore.tunnel.worker.TunnelWorkerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.system.SystemProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,23 +32,33 @@ import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 @RestController
+@Configuration
 public class OtsTableBackupApplication {
     private static final Logger logger = LoggerFactory.getLogger(OtsTableBackupApplication.class);
-    private static final String SOURCE_ENDPOINT = "SOURCE_ENDPOINT";
-    private static final String TARGET_ENDPOINT = "TARGET_ENDPOINT";
-    private static final String SOURCE_TABLE = "SOURCE_TABLE";
-    private static final String TARGET_TABLE = "TARGET_TABLE";
 
     private static final String TUNNEL_NAME = "FCBackupTunnel";
 
     private static final String FC_STATUS_HEADER = "x-fc-status";
+    @Value("${TUNNEL_TYPE: BaseAndStream}")
+    private TunnelType tunnelType;
 
-    private static final TunnelType tunnelType = System.getenv("TUNNEL_TYPE") != null ?
-            TunnelType.valueOf(System.getenv("TUNNEL_TYPE")) : TunnelType.BaseAndStream;
+    @Value("${BACKUP_END_TIME: 1970-01-01 00:00:00}")
+    private String backupEndTime;
 
-    private static final String backupEndTime = System.getenv("BACKUP_END_TIME");
+    @Value("${DROP_IF_EXIST: false}")
+    private boolean dropIfExist;
 
-    private static final boolean dropIfExist = System.getenv("DROP_IF_EXIST") != null && Boolean.parseBoolean(System.getenv("DROP_IF_EXIST"));
+    @Value("${SOURCE_ENDPOINT}")
+    private String sourceEndpoint;
+
+    @Value("${TARGET_ENDPOINT}")
+    private String targetEndpoint;
+
+    @Value("${SOURCE_TABLE}")
+    private String sourceTable;
+
+    @Value("${TARGET_TABLE}")
+    private String targetTable;
 
     private TableEntity source;
 
@@ -57,8 +70,6 @@ public class OtsTableBackupApplication {
     private TunnelWorker tunnelWorker;
 
     private TunnelWorkerConfig tunnelWorkerConfig;
-
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private TunnelClient tunnelClient;
 
@@ -136,6 +147,7 @@ public class OtsTableBackupApplication {
      */
     @PostMapping("/initialize")
     public ResponseEntity<String> initTable(@RequestHeader Map<String, String> headers) {
+        logger.info("System {}", SystemProperties.get("SOURCE_TABLE"));
         String accessKeyId = headers.get("x-fc-access-key-id");
         String accessKeySecret = headers.get("x-fc-access-key-secret");
         String stsToken = headers.get("x-fc-security-token");
@@ -144,8 +156,8 @@ public class OtsTableBackupApplication {
 
         try {
             logger.info("FC Initialize Start RequestId: {}", requestId);
-            source = new TableEntity(System.getenv(SOURCE_ENDPOINT), System.getenv(SOURCE_TABLE));
-            target = new TableEntity(System.getenv(TARGET_ENDPOINT), System.getenv(TARGET_TABLE));
+            source = new TableEntity(sourceEndpoint, sourceTable);
+            target = new TableEntity(targetEndpoint, targetTable);
             sourceClient = new SyncClient(source.getEndpoint(), accessKeyId, accessKeySecret,
                     source.getInstanceName(), stsToken);
             targetClient = new SyncClient(target.getEndpoint(), accessKeyId, accessKeySecret,
@@ -260,6 +272,7 @@ public class OtsTableBackupApplication {
             tunnelWorker.connectAndWorking();
 
             final long endTime = getEndTime();
+            final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
             executor.scheduleAtFixedRate(() -> {
                 DescribeTunnelResponse resp = tunnelClient.describeTunnel(new DescribeTunnelRequest(
                         source.getTableName(), TUNNEL_NAME
@@ -277,6 +290,7 @@ public class OtsTableBackupApplication {
             }, 0, 5, TimeUnit.SECONDS);
 
             boolean finished = executor.awaitTermination(600, TimeUnit.SECONDS);
+            logger.info("Executor shutdown success");
             if (!finished) {
                 fcHeaders.add(FC_STATUS_HEADER, String.valueOf(HttpStatus.NOT_FOUND.value()));
                 return new ResponseEntity<>("Waiting Timeout", fcHeaders, HttpStatus.NOT_FOUND);
@@ -317,11 +331,6 @@ public class OtsTableBackupApplication {
             targetClient.shutdown();
         }
         logger.info("Table store worker shutdown success");
-
-        if (!executor.isShutdown()) {
-            executor.shutdown();
-            logger.info("Executor shutdown success");
-        }
 
         fcHeaders.add(FC_STATUS_HEADER, String.valueOf(HttpStatus.OK.value()));
         return new ResponseEntity<>("PreStop Success", fcHeaders, HttpStatus.OK);
