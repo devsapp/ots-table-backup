@@ -62,9 +62,9 @@
 | -------------- | -------- | -------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | serviceName    | String   | 选填     | ots-table-backup                                          | 函数服务名称名                                                                                         |
 | functionName   | String   | 选填     | ots-table-backup                                          | 函数名称                                                                                               |
-| roleArn        | String   | 必填     | 'acs:ram::<accountId>:role/aliyuncdnserverlessdevsrole'        | 函数执行角色                                                                                           |
-| sourceEndpoint | String   | 必填     | 'https://<instanceId>.<region>.ots-internal.aliyuncs.com' | 源表所在实例endpoint                                                                                   |
-| targetEndpoint | String   | 必填     | 'https://<instanceId>.<region>.ots-internal.aliyuncs.com' | 目标表所在实例endpoint                                                                                 |
+| roleArn        | String   | 必填     | acs:ram:\:\<accountId>:role/aliyuncdnserverlessdevsrole        | 函数执行角色                                                                                           |
+| sourceEndpoint | String   | 必填     | https://\<instanceId>.<region>.ots-internal.aliyuncs.com | 源表所在实例endpoint                                                                                   |
+| targetEndpoint | String   | 必填     | https://\<instanceId>.\<region>.ots-internal.aliyuncs.com | 目标表所在实例endpoint                                                                                 |
 | sourceTable    | String   | 必填     | source-table                                              | 源表名名                                                                                               |
 | targetTable    | String   | 必填     | target-table                                              | 目标表名名                                                                                             |
 | tunnelType     | String   | 选填     | BaseData                                                  | [通道类型](https://help.aliyun.com/document_detail/102489.html)                                        |
@@ -77,7 +77,7 @@
 * 使用函数计算的 [Custom Runtime](https://help.aliyun.com/document_detail/191342.html) 将单体SpringBoot项目进行函数化，完全贴合传统开发体验，实现零代码改造
 * 使用函数计算的 [生命周期回调](https://help.aliyun.com/document_detail/425056.html)，将表初始化的逻辑封装到 Initializer 中，将通道消费的逻辑封装到 Invoke 中，将连接池释放的逻辑封装到 PreStop 中
 
-![alt](https://img.alicdn.com/imgextra/i4/O1CN01kIubex1l1fdk8ZnIQ_!!6000000004759-2-tps-981-1071.png)
+![alt](https://img.alicdn.com/imgextra/i4/O1CN0156mNCE1Ii9WJk11BD_!!6000000000926-2-tps-981-1071.png)
 
 
 部署完成后，会创建两个函数:
