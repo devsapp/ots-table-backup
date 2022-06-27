@@ -62,7 +62,7 @@
 | -------------- | -------- | -------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | serviceName    | String   | 选填     | ots-table-backup                                          | 函数服务名称名                                                                                         |
 | functionName   | String   | 选填     | ots-table-backup                                          | 函数名称                                                                                               |
-| roleArn        | String   | 必填     | acs:ram:\:\<accountId>:role/aliyuncdnserverlessdevsrole        | 函数执行角色                                                                                           |
+| roleArn        | String   | 必填     | acs\:ram\:\:\<accountId>:role/aliyuncdnserverlessdevsrole        | 函数执行角色                                                                                           |
 | sourceEndpoint | String   | 必填     | https://\<instanceId>.<region>.ots-internal.aliyuncs.com | 源表所在实例endpoint                                                                                   |
 | targetEndpoint | String   | 必填     | https://\<instanceId>.\<region>.ots-internal.aliyuncs.com | 目标表所在实例endpoint                                                                                 |
 | sourceTable    | String   | 必填     | source-table                                              | 源表名名                                                                                               |
