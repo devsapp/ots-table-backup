@@ -62,13 +62,13 @@
 | -------------- | -------- | -------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | serviceName    | String   | 选填     | ots-table-backup                                          | 函数服务名称名                                                                                         |
 | functionName   | String   | 选填     | ots-table-backup                                          | 函数名称                                                                                               |
-| roleArn        | String   | 必填     | acs:ram:\:\<accountId>:role/aliyuncdnserverlessdevsrole        | 函数执行角色                                                                                           |
-| sourceEndpoint | String   | 必填     | https://\<instanceId>.<region>.ots-internal.aliyuncs.com | 源表所在实例endpoint                                                                                   |
+| roleArn        | String   | 必填     | acs:*ram*::\<accountId>:role/aliyuncdnserverlessdevsrole  | 函数执行角色                                                                                           |
+| sourceEndpoint | String   | 必填     | https://\<instanceId>.<region>.ots-internal.aliyuncs.com  | 源表所在实例endpoint                                                                                   |
 | targetEndpoint | String   | 必填     | https://\<instanceId>.\<region>.ots-internal.aliyuncs.com | 目标表所在实例endpoint                                                                                 |
 | sourceTable    | String   | 必填     | source-table                                              | 源表名名                                                                                               |
 | targetTable    | String   | 必填     | target-table                                              | 目标表名名                                                                                             |
 | tunnelType     | String   | 选填     | BaseData                                                  | [通道类型](https://help.aliyun.com/document_detail/102489.html)                                        |
-| backupEndTime  | String   | 选填     | '2022-07-01 00:00:00'                                     | 使用增量备份时，备份的截止时间，yyyy-MM-dd HH:mm:ss                                                    |
+| backupEndTime  | String   | 选填     | 2022-07-01 01:01:01                                       | 使用增量备份时，备份的截止时间，`yyyy-MM-dd HH:mm:ss`                                                  |
 | dropIfExist    | Boolean  | 选填     | False                                                     | 目标表存在时是否先删除目标表，保证目标表和源表的完全一致                                               |
 | cronExpression | String   | 选填     | '@every 60m'                                              | 定时触发时间，参考 [函数计算](https://help.aliyun.com/document_detail/171746.html#section-gbz-k3r-vum) |
 
