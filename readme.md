@@ -62,7 +62,7 @@
 | -------------- | -------- | -------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | serviceName    | String   | 选填     | ots-table-backup                                          | 函数服务名称名                                                                                         |
 | functionName   | String   | 选填     | ots-table-backup                                          | 函数名称                                                                                               |
-| roleArn        | String   | 必填     | 'acs:ram::123456:role/aliyuncdnserverlessdevsrole'        | 函数执行角色                                                                                           |
+| roleArn        | String   | 必填     | 'acs:ram::<accountId>:role/aliyuncdnserverlessdevsrole'        | 函数执行角色                                                                                           |
 | sourceEndpoint | String   | 必填     | 'https://<instanceId>.<region>.ots-internal.aliyuncs.com' | 源表所在实例endpoint                                                                                   |
 | targetEndpoint | String   | 必填     | 'https://<instanceId>.<region>.ots-internal.aliyuncs.com' | 目标表所在实例endpoint                                                                                 |
 | sourceTable    | String   | 必填     | source-table                                              | 源表名名                                                                                               |
@@ -98,6 +98,8 @@
    ![alt](https://img.alicdn.com/imgextra/i1/O1CN01gonw031w0iacmHKN6_!!6000000006246-0-tps-3406-1546.jpg)
 5. 开启定时备份
    ![alt](https://img.alicdn.com/imgextra/i1/O1CN0126uyAJ1x9hyuchxc9_!!6000000006401-0-tps-3794-1000.jpg)
+
+</appdetail>
 
 <devgroup>
 
