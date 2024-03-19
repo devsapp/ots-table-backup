@@ -8,6 +8,7 @@ vars: # 全局变量
     name: '{{ serviceName }}'
     description: 'OTS Table Backup Service'
     logConfig: auto
+    role: '{{ roleArn }}'
 
 services:
   tableBackup: # 业务名称/模块名称
