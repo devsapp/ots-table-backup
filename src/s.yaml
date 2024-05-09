@@ -7,7 +7,6 @@ vars: # 全局变量
   service:
     name: '{{ serviceName }}'
     description: 'OTS Table Backup Service'
-    logConfig: auto
     role: '{{ roleArn }}'
 
 services:
